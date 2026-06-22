@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aksel Chemin — Développement Web</title>
+<link rel="icon" type="image/png" href="web-app-manifest-512x512.png"  />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=Syne+Mono&display=swap" rel="stylesheet">
+<script src="lang.js" defer></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --rust:#E8521A;
+  --sand:#F2E8D5;
+  --dark:#222222;
+  --lime:#C8E63C;
+  --muted:#6A6050;
+  --surface:rgba(14,13,11,.7);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Syne',sans-serif;background:var(--dark);color:var(--sand);overflow-x:hidden;cursor:none;}
+
+/* ── CANVAS ── */
+#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+nav,main,footer{position:relative;z-index:10;}
+
+/* ── CURSOR ── */
+.cur{position:fixed;width:8px;height:8px;background:var(--lime);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s;}
+.cur-r{position:fixed;width:34px;height:34px;border:1px solid rgba(200,230,60,.35);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.8rem 3rem;
+  transition:background .4s,backdrop-filter .4s;
+}
+.nav-back{
+  display:flex;align-items:center;gap:.6rem;
+  font-family:'Syne Mono',monospace;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;
+  color:#E8521A;text-decoration:none;transition:color .3s;
+}
+.nav-back:hover{color:var(--lime);}
+.nav-back svg{transition:transform .3s;}
+.nav-back:hover svg{transform:translateX(-4px);}
+.nav-label{font-family:'Syne Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(242,232,213,.25);}
+.nav-label em{color:var(--rust);font-style:normal;}
+
+/* ── HERO ── */
+.hero{
+  min-height:55vh;display:flex;flex-direction:column;justify-content:flex-end;
+  padding:9rem 3rem 4rem;position:relative;overflow:hidden;
+}
+/* code deco flottant */
+.hero-code{
+  position:absolute;top:9rem;right:3rem;
+  font-family:'Syne Mono',monospace;font-size:.68rem;
+  color:rgba(120, 120, 120, 0);line-height:1.9;
+  pointer-events:none;user-select:none;
+  animation:fadeUp .9s ease both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+.hero-eyebrow{
+  font-family:'Syne Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--rust);margin-bottom:1.5rem;display:flex;align-items:center;gap:.8rem;
+  animation:fadeUp .7s ease both;
+}
+.ew{display:inline-block;width:28px;height:1px;background:var(--rust);}
+
+.hero h1{
+  font-size:clamp(3.5rem,9vw,9rem);font-weight:800;
+  line-height:.92;letter-spacing:-.04em;
+  animation:fadeUp .7s .1s ease both;
+}
+.hero h1 em{color:var(--rust);font-style:italic;display:block;}
+
+.hero-sub{
+  margin-top:1.6rem;max-width:520px;
+  font-size:.95rem;font-weight:400;line-height:1.72;color:rgba(242,232,213,.5);
+  animation:fadeUp .7s .2s ease both;
+}
+.hero-skills{
+  display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.8rem;
+  animation:fadeUp .7s .3s ease both;
+}
+.skill-pill{
+  padding:.3rem .9rem;
+  border:1px solid rgba(232,82,26,.25);border-radius:2rem;
+  font-family:'Syne Mono',monospace;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--rust);background:rgba(232,82,26,.05);
+}
+
+/* ── TICKER ── */
+.ticker{overflow:hidden;border-top:1px solid rgba(242,232,213,.06);border-bottom:1px solid rgba(242,232,213,.06);padding:.85rem 0;background:rgba(14,13,11,.55);backdrop-filter:blur(10px);}
+.ticker-track{display:flex;width:max-content;animation:tick 22s linear infinite;align-items:center;}
+.ti{font-family:'Syne Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:0 2rem;white-space:nowrap;}
+.ti.hi{color:var(--rust);}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── SECTION HEAD ── */
+.section-head{
+  display:flex;align-items:baseline;justify-content:space-between;
+  padding:5rem 3rem 3rem;
+  background:rgba(14,13,11,.5);backdrop-filter:blur(12px);
+}
+.section-num{font-family:'Syne Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);}
+.section-title{font-size:clamp(2rem,4vw,4rem);font-weight:800;letter-spacing:-.03em;}
+.section-title em{color:var(--rust);font-style:italic;}
+
+/* ── PROJECTS ── */
+.projects{
+  padding:0 3rem 5rem;
+  display:flex;flex-direction:column;gap:2rem;
+  background:rgba(14,13,11,.45);backdrop-filter:blur(8px);
+}
+
+.project-card{
+  display:grid;grid-template-columns:1fr 1fr;gap:0;
+  border:1px solid rgba(242,232,213,.07);border-radius:.5rem;overflow:hidden;
+  transition:border-color .35s;
+}
+.project-card:hover{border-color:rgba(232,82,26,.3);}
+.project-card.reverse{direction:rtl;}
+.project-card.reverse>*{direction:ltr;}
+
+/* zone vidéo */
+.project-visual{
+  position:relative;background:#00000000;overflow:hidden;
+  min-height:420px;display:flex;align-items:center;justify-content:center;
+}
+.project-visual video{width:100%;height:100%;object-fit:contain;display:block;}
+
+/* panneau info */
+.project-info{
+  background:rgba(14,13,11,.8);backdrop-filter:blur(16px);
+  padding:2.8rem 2.4rem;
+  display:flex;flex-direction:column;justify-content:space-between;
+  border-left:1px solid rgba(242,232,213,.06);
+}
+.project-card.reverse .project-info{border-left:none;border-right:1px solid rgba(242,232,213,.06);}
+
+.project-num{
+  font-family:'Syne Mono',monospace;font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:1rem;
+}
+.project-title{
+  font-size:1.8rem;font-weight:800;line-height:1;letter-spacing:-.025em;
+  color:var(--sand);margin-bottom:.75rem;
+}
+.project-title em{font-style:italic;color:var(--rust);display:block;font-size:1.4rem;}
+.project-desc{
+  font-size:.88rem;font-weight:400;line-height:1.75;
+  color:rgba(242,232,213,.5);margin-bottom:1.8rem;
+}
+.project-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:2rem;}
+.tag{
+  font-family:'Syne Mono',monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:.25rem .65rem;border-radius:2rem;
+  border:1px solid rgba(242,232,213,.1);color:rgba(242,232,213,.35);
+}
+
+.project-meta{border-top:1px solid rgba(242,232,213,.06);padding-top:1.4rem;}
+.meta-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.4rem 0;
+}
+.meta-label{font-family:'Syne Mono',monospace;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);}
+.meta-value{font-size:.82rem;font-weight:500;color:var(--sand);}
+
+.btn-view{
+  display:inline-flex;align-items:center;gap:.5rem;
+  margin-top:1.4rem;padding:.7rem 1.4rem;
+  border:1px solid var(--rust);color:var(--rust);
+  background:transparent;border-radius:2rem;
+  font-family:'Syne Mono',monospace;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;
+  cursor:pointer;text-decoration:none;
+  transition:background .25s,color .25s;
+}
+.btn-view:hover{background:var(--rust);color:var(--dark);}
+.btn-view svg{transition:transform .2s;}
+.btn-view:hover svg{transform:translateX(3px);}
+
+/* ── COMPETENCES ── */
+.competences{
+  margin:0 3rem 5rem;
+  border:1px solid rgba(242,232,213,.07);border-radius:.5rem;overflow:hidden;
+  background:rgba(14,13,11,.55);backdrop-filter:blur(12px);
+}
+.comp-header{
+  background:rgba(242,232,213,.03);padding:1.2rem 1.8rem;
+  display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid rgba(242,232,213,.06);
+}
+.comp-header-title{
+  font-family:'Syne Mono',monospace;font-weight:700;font-size:.7rem;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--sand);
+}
+.comp-header-sub{font-family:'Syne Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);}
+.comp-grid{display:grid;grid-template-columns:repeat(4,1fr);}
+.comp-item{
+  padding:1.6rem 1.8rem;
+  border-right:1px solid rgba(242,232,213,.06);
+  border-top:1px solid rgba(242,232,213,.06);
+  transition:background .3s;
+}
+.comp-item:hover{background:rgba(232,82,26,.04);}
+.comp-item:nth-child(4n){border-right:none;}
+.comp-icon{font-size:1.4rem;margin-bottom:.6rem;}
+.comp-name{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:.88rem;
+  letter-spacing:-.01em;color:var(--sand);margin-bottom:.35rem;
+}
+.comp-desc{font-size:.78rem;color:rgba(242,232,213,.4);line-height:1.55;}
+.comp-bar{height:2px;background:rgba(242,232,213,.06);margin-top:.9rem;border-radius:1px;overflow:hidden;}
+.comp-fill{height:100%;background:var(--rust);border-radius:1px;transition:width 1.2s cubic-bezier(.16,1,.3,1);}
+
+/* ── TOOLS BAR ── */
+.tools-bar{
+  display:flex;align-items:center;gap:2rem;
+  padding:1.5rem 3rem;
+  border-top:1px solid rgba(242,232,213,.05);
+  border-bottom:1px solid rgba(197, 152, 69, 0.05);
+  background:rgba(14,13,11,.7);backdrop-filter:blur(12px);
+}
+.tools-label{font-family:'Syne Mono',monospace;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+.tools-pills{display:flex;flex-wrap:wrap;gap:.5rem;}
+.pill{
+  display:flex;align-items:center;gap:.4rem;
+  font-family:'Syne Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(242,232,213,.35);background:rgba(242,232,213,.03);
+  border:1px solid rgba(242,232,213,.08);border-radius:2rem;padding:.3rem .8rem;
+}
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+
+/* ── CTA ── */
+.cta{
+  padding:7rem 3rem;
+  background:var(--rust);
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;overflow:hidden;
+}
+.cta::before{content:'→';position:absolute;right:-2rem;bottom:-3rem;font-size:18rem;font-weight:800;color:rgba(0,0,0,.07);pointer-events:none;}
+.cta-left h2{font-size:clamp(2.5rem,5vw,5.5rem);font-weight:800;line-height:.88;letter-spacing:-.04em;color:var(--sand);}
+.cta-left p{font-family:'Syne Mono',monospace;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(242,232,213,.5);margin-top:1rem;}
+.btn-row{display:flex;gap:1rem;flex-wrap:wrap;position:relative;z-index:1;}
+.btn-p{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.85rem 2rem;background:var(--sand);color:var(--rust);
+  border:none;border-radius:3rem;
+  font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;
+  cursor:pointer;transition:transform .3s,box-shadow .3s;text-decoration:none;
+}
+.btn-p:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,.2);}
+.btn-s{
+  display:inline-flex;align-items:center;
+  padding:.85rem 2rem;background:transparent;color:var(--sand);
+  border:1px solid rgba(242,232,213,.3);border-radius:3rem;
+  font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;
+  cursor:pointer;transition:border-color .3s,color .3s;text-decoration:none;
+}
+.btn-s:hover{border-color:var(--sand);color:var(--sand);}
+
+/* ── FOOTER ── */
+footer{
+  background:rgba(14,13,11,.95);border-top:1px solid rgba(242,232,213,.05);
+  padding:1.4rem 3rem;display:flex;align-items:center;justify-content:space-between;
+}
+.ft-logo{font-family:'Syne Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(242,232,213,.2);}
+.ft-right{font-family:'Syne Mono',monospace;font-size:.58rem;color:rgba(242,232,213,.15);letter-spacing:.1em;}
+.ft-right a{color:inherit;text-decoration:none;transition:color .3s;}
+.ft-right a:hover{color:var(--lime);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  nav{padding:1rem 1.5rem;}
+  .hero{padding:8rem 1.5rem 3rem;}
+  .hero-code{display:none;}
+  .section-head{padding:3rem 1.5rem 1.5rem;}
+  .projects{padding:0 1.5rem 4rem;}
+  .project-card{grid-template-columns:1fr;}
+  .project-card.reverse{direction:ltr;}
+  .project-visual{min-height:280px;}
+  .project-info{border-left:none!important;border-right:none!important;border-top:1px solid rgba(255, 255, 255, 0);}
+  .competences{margin:0 1.5rem 4rem;}
+  .comp-grid{grid-template-columns:1fr 1fr;}
+  .comp-item:nth-child(2n){border-right:none;}
+  .comp-item:nth-child(4n){border-right:1px solid rgba(255, 255, 255, 0);}
+  .tools-bar{padding:1.2rem 1.5rem;}
+  .cta{flex-direction:column;gap:3rem;align-items:flex-start;padding:5rem 2rem;}
+}
+@media(max-width:560px){
+  .comp-grid{grid-template-columns:1fr;}
+  .comp-item{border-right:none;}
+  .comp-item:nth-child(4n){border-right:none;}
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="cur" id="cur"></div>
+<div class="cur-r" id="curR"></div>
+
+<nav id="nav">
+  <a href="index.html" class="nav-back">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <span data-en="Back">Retour</span>
+  </a>
+  <span style="display:flex;align-items:center;gap:1.2rem;">
+    <span class="nav-label">Aksel Chemin — <em>Développement Web</em></span>
+    <button class="lang-toggle" type="button">EN</button>
+  </span>
+</nav>
+
+<main>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-code">
+&lt;section class="hero"&gt;<br>
+&nbsp;&nbsp;&lt;h1&gt;Dev<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Web&lt;/h1&gt;<br>
+&nbsp;&nbsp;&lt;nav&gt;...&lt;/nav&gt;<br>
+&lt;/section&gt;<br>
+.btn { color: #E8521A; }<br>
+@media (max-width: 768px) {<br>
+&nbsp;&nbsp;grid: 1fr;<br>
+}
+  </div>
+  <div class="hero-eyebrow"><span class="ew"></span><span data-en="Field 01 — Web Development">Domaine 01 — Développement Web</span></div>
+  <h1>Dev<em>Web.</em></h1>
+  <p class="hero-sub" data-en="Design and integration of responsive websites — from structured HTML/CSS code to faithful recreations of digital identities.">Conception et intégration de sites web responsives — du code structuré HTML/CSS à la recréation fidèle d'identités numériques.</p>
+  <div class="hero-skills">
+    <span class="skill-pill">HTML / CSS</span>
+    <span class="skill-pill">JavaScript</span>
+    <span class="skill-pill">PHP</span>
+    <span class="skill-pill" data-en="Database">Base de données</span>
+    <span class="skill-pill">Responsive Design</span>
+    <span class="skill-pill">WordPress</span>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="ti">HTML5</span><span class="ti hi">✦</span>
+    <span class="ti">CSS3</span><span class="ti hi">✦</span>
+    <span class="ti">JavaScript</span><span class="ti hi">✦</span>
+    <span class="ti">PHP</span><span class="ti hi">✦</span>
+    <span class="ti">Responsive</span><span class="ti hi">✦</span>
+    <span class="ti">WordPress</span><span class="ti hi">✦</span>  
+    <span class="ti">MySQL</span><span class="ti hi">✦</span>
+    <span class="ti">HTML5</span><span class="ti hi">✦</span>
+    <span class="ti">CSS3</span><span class="ti hi">✦</span>
+    <span class="ti">JavaScript</span><span class="ti hi">✦</span>
+    <span class="ti">PHP</span><span class="ti hi">✦</span>
+    <span class="ti">Responsive</span><span class="ti hi">✦</span>
+    <span class="ti">WordPress</span><span class="ti hi">✦</span>
+    <span class="ti">MySQL</span><span class="ti hi">✦</span>
+  </div>
+</div>
+
+<!-- SECTION HEAD -->
+<div class="section-head">
+  <span class="section-num" data-en="[ 02 projects ]">[ 02 projets ]</span>
+  <h2 class="section-title" data-en="Selected <em>work</em>">Réalisations <em>sélectionnées</em></h2>
+</div>
+
+<!-- PROJECTS -->
+<div class="projects">
+
+  <!-- PROJET 1 : Elden Ring -->
+  <div class="project-card">
+    <div class="project-visual">
+      <video src="elden-ring.mp4" autoplay muted loop playsinline></video>
+    </div>
+    <div class="project-info">
+      <div>
+        <div class="project-num" data-en="[ Project 01 / 02 ]">[ Projet 01 / 02 ]</div>
+        <h3 class="project-title">Site Elden Ring<em>HTML & CSS</em></h3>
+        <p class="project-desc" data-en="A themed website about the game Elden Ring, built entirely in HTML and CSS. Immersive layout with a dark background, rounded golden cards, an embedded Spotify player and a sign-up form — all fully responsive.">Site thématique sur le jeu Elden Ring, réalisé entièrement en HTML et CSS. Mise en page immersive avec fond sombre, cartes dorées arrondies, intégration d'un player Spotify et d'un formulaire d'inscription — le tout en responsive design.</p>
+        <div class="project-tags">
+          <span class="tag">HTML5</span>
+          <span class="tag">CSS3</span>
+          <span class="tag">Flexbox</span>
+          <span class="tag">CSS Grid</span>
+          <span class="tag">Responsive</span>
+          <span class="tag" data-en="Spotify integration">Intégration Spotify</span>
+        </div>
+      </div>
+      <div class="project-meta">
+        <div class="meta-row"><span class="meta-label" data-en="Type">Type</span><span class="meta-value" data-en="Static site">Site statique</span></div>
+        <div class="meta-row"><span class="meta-label" data-en="Year">Année</span><span class="meta-value">2024</span></div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJET 2 : Fondation du Doute -->
+  <div class="project-card reverse">
+    <div class="project-visual">
+      <video src="fondation-du-doute.mp4" autoplay muted loop playsinline></video>
+    </div>
+    <div class="project-info">
+      <div>
+        <div class="project-num" data-en="[ Project 02 / 02 ]">[ Projet 02 / 02 ]</div>
+        <h3 class="project-title">Fondation<em>du Doute</em></h3>
+        <p class="project-desc" data-en="A faithful recreation of the website of the Fondation du Doute in Blois — a contemporary art venue dedicated to the work of Ben. Respecting the original brand guidelines (typography, beige and gold tones, editorial grid), with dynamic content integration and a fully responsive adaptation.">Recréation fidèle du site web de la Fondation du Doute à Blois — lieu d'art contemporain dédié à l'œuvre de Ben. Respect de la charte graphique originale (typographie, tons beige et doré, grille éditoriale), intégration de contenus dynamiques et adaptation responsive complète.</p>
+        <div class="project-tags">
+          <span class="tag">HTML5</span>
+          <span class="tag">CSS3</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag" data-en="Integration">Intégration</span>
+          <span class="tag" data-en="Brand guidelines">Charte graphique</span>
+          <span class="tag">Responsive</span>
+        </div>
+      </div>
+      <div class="project-meta">
+        <div class="meta-row"><span class="meta-label" data-en="Type">Type</span><span class="meta-value" data-en="Site recreation">Recréation de site</span></div>
+        <div class="meta-row"><span class="meta-label" data-en="Reference">Référence</span><span class="meta-value">fondation-du-doute.fr</span></div>
+       
+      </div>
+    </div>
+  </div>
+
+</div>
+<!--PROJET 3 -->
+<div class="project-card">
+    <div class="project-visual">
+      <video src="cap-ciné.mp4" autoplay muted loop playsinline></video>
+    </div>
+    <div class="project-info">
+      <div>
+        <div class="project-num" data-en="[ Project 03 / 03 ]">[ Projet 03 / 03 ]</div>
+        <h3 class="project-title">Site Cinéma<em>Wordpress et CMS</em></h3>
+        <p class="project-desc" data-en="A recreation of the Cap'Ciné website, integrating WordPress and a custom CMS. Responsive design and performance optimisation.">Recréation du site web de Cap'Ciné, intégrant WordPress et un CMS personnalisé. Conception responsive et optimisation pour les performances.</p>
+        <div class="project-tags">
+       <span class="tag">HTML5</span>
+          <span class="tag">CSS3</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag" data-en="Integration">Intégration</span>
+          <span class="tag" data-en="Brand guidelines">Charte graphique</span>
+          <span class="tag">Responsive</span>
+        </div>
+      </div>
+      <div class="project-meta">
+        <div class="meta-row"><span class="meta-label" data-en="Type">Type</span><span class="meta-value" data-en="Site recreation">Recréation de site</span></div>
+        <div class="meta-row"><span class="meta-label" data-en="Year">Année</span><span class="meta-value">2026</span></div>
+       
+      </div>
+    </div>
+  </div>
+
+  
+<!-- COMPETENCES -->
+<div class="section-head" style="padding-top:2rem;">
+  <span class="section-num" data-en="[ Know-how ]">[ Savoir-faire ]</span>
+  <h2 class="section-title" data-en="<em>Technical</em> skills">Compétences <em>techniques</em></h2>
+</div>
+<div class="competences">
+  <div class="comp-header">
+    <span class="comp-header-title" data-en="Technical stack">Stack technique</span>
+    <span class="comp-header-sub" data-en="4 areas">4 domaines</span>
+  </div>
+  <div class="comp-grid">
+    <div class="comp-item">
+      <div class="comp-icon">💻</div>
+      <div class="comp-name">HTML / CSS</div>
+      <div class="comp-desc" data-en="Semantic structure, Flexbox, Grid, CSS animations and transitions.">Structure sémantique, Flexbox, Grid, animations et transitions CSS.</div>
+      <div class="comp-bar"><div class="comp-fill" style="width:88%"></div></div>
+    </div>
+    <div class="comp-item">
+      <div class="comp-icon">⚡</div>
+      <div class="comp-name">JavaScript</div>
+      <div class="comp-desc" data-en="DOM interactions, events, fetch API, dynamic content manipulation.">Interactions DOM, events, fetch API, manipulation dynamique de contenu.</div>
+      <div class="comp-bar"><div class="comp-fill" style="width:42%"></div></div>
+    </div>
+    <div class="comp-item">
+      <div class="comp-icon">🗄️</div>
+      <div class="comp-name">PHP / BDD</div>
+      <div class="comp-desc" data-en="Server-side logic, MySQL, SQL queries, forms and sessions.">Logique serveur, MySQL, requêtes SQL, formulaires et sessions.</div>
+      <div class="comp-bar"><div class="comp-fill" style="width:32%"></div></div>
+    </div>
+    <div class="comp-item">
+      <div class="comp-icon">📱</div>
+      <div class="comp-name">Responsive</div>
+      <div class="comp-desc" data-en="Media queries, mobile-first approach, multi-device testing.">Media queries, approche mobile-first, tests multi-device.</div>
+      <div class="comp-bar"><div class="comp-fill" style="width:85%"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOOLS -->
+<div class="tools-bar">
+  <span class="tools-label" data-en="[ Tools ]">[ Outils ]</span>
+  <div class="tools-pills">
+    <div class="pill"><span class="dot" style="background:#e34f26"></span>HTML5</div>
+    <div class="pill"><span class="dot" style="background:#1572b6"></span>CSS3</div>
+    <div class="pill"><span class="dot" style="background:#f7df1e"></span>JavaScript</div>
+    <div class="pill"><span class="dot" style="background:#777bb4"></span>PHP</div>
+    <div class="pill"><span class="dot" style="background:#21759b"></span>WordPress</div>
+  </div>
+</div>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="cta-left">
+    <h2 data-en="Let's work<br>together.">Travaillons<br>ensemble.</h2>
+    <p data-en="Available for an internship">Disponible pour un stage</p>
+  </div>
+  <div class="btn-row">
+    <a href="index.html#contact" class="btn-p" data-en="Get in touch ↗">Me contacter ↗</a>
+    <a href="index.html#projets" class="btn-s" data-en="All projects">Tous les projets</a>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <span class="ft-logo">Aksel Chemin — MMI 2024</span>
+  <span class="ft-right"><a href="index.html" data-en="← Back to portfolio">← Retour au portfolio</a></span>
+</footer>
+
+<script>
+/* ── CANVAS lignes animées ── */
+const canvas=document.getElementById('bgCanvas'),ctx=canvas.getContext('2d');
+let W,H,scrollY=0,tgt=0,t=0;
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+resize();window.addEventListener('resize',resize);
+window.addEventListener('scroll',()=>{tgt=window.scrollY;});
+const C=[[232,82,26],[200,230,60],[242,232,213],[120,108,90]];
+const lines=Array.from({length:28},()=>({
+  x:Math.random(),y:Math.random(),
+  angle:Math.random()*Math.PI*2,
+  len:.06+Math.random()*.25,
+  speed:.0003+Math.random()*.001,
+  wAmp:.15+Math.random()*.6,wFreq:.3+Math.random()*1.1,
+  phase:Math.random()*Math.PI*2,
+  rgb:C[Math.floor(Math.random()*4)],
+  alpha:.04+Math.random()*.13,
+  width:.4+Math.random()*2.2,
+  sFact:-.5+Math.random()
+}));
+(function draw(){
+  scrollY+=(tgt-scrollY)*.06;t+=.007;
+  ctx.clearRect(0,0,W,H);
+  const sp=Math.min(scrollY/(document.body.scrollHeight-window.innerHeight||1),1);
+  lines.forEach(l=>{
+    let px=((l.x+Math.cos(l.angle)*l.speed*t*60)%1+1)%1;
+    let py=((l.y+Math.sin(l.angle)*l.speed*t*60+scrollY*l.sFact*.00045)%1+1)%1;
+    const angle=l.angle+Math.sin(t*l.wFreq+l.phase)*l.wAmp;
+    const dLen=l.len*(1+sp*1.2);
+    const x1=px*W,y1=py*H,x2=x1+Math.cos(angle)*dLen*Math.max(W,H),y2=y1+Math.sin(angle)*dLen*Math.max(W,H);
+    const a=Math.max(0,Math.min(.25,l.alpha+Math.sin(t*.6+l.phase)*.025+sp*.06));
+    const cpx=x1+(x2-x1)*.5+Math.sin(t*.8+l.phase)*80,cpy=y1+(y2-y1)*.5+Math.cos(t*.55+l.phase)*80;
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.quadraticCurveTo(cpx,cpy,x2,y2);
+    ctx.strokeStyle=`rgba(${l.rgb[0]},${l.rgb[1]},${l.rgb[2]},${a})`;
+    ctx.lineWidth=l.width*(1+sp*2);ctx.lineCap='round';ctx.stroke();
+  });
+  requestAnimationFrame(draw);
+})();
+
+/* ── CURSOR ── */
+const cur=document.getElementById('cur'),curR=document.getElementById('curR');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function loop(){
+  cur.style.left=mx+'px';cur.style.top=my+'px';
+  rx+=(mx-rx)*.1;ry+=(my-ry)*.1;
+  curR.style.left=rx+'px';curR.style.top=ry+'px';
+  requestAnimationFrame(loop);
+})();
+document.querySelectorAll('a,button,.project-card,.comp-item').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='4px';cur.style.height='4px';curR.style.width='54px';curR.style.height='54px';});
+  el.addEventListener('mouseleave',()=>{cur.style.width='8px';cur.style.height='8px';curR.style.width='34px';curR.style.height='34px';});
+});
+
+/* ── NAV SCROLL ── */
+window.addEventListener('scroll',()=>{
+  const nav=document.getElementById('nav');
+  nav.style.background=window.scrollY>60?'rgba(14,13,11,.88)':'transparent';
+  nav.style.backdropFilter=window.scrollY>60?'blur(18px)':'none';
+});
+
+/* ── COMP BARS animation au scroll ── */
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.comp-fill').forEach(bar=>{
+        const w=bar.style.width;bar.style.width='0';
+        setTimeout(()=>{bar.style.width=w;},100);
+      });
+      io.unobserve(e.target);
+    }
+  });
+},{threshold:.3});
+document.querySelectorAll('.competences').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
