@@ -137,11 +137,32 @@ nav{
 
 /* AFFICHE GRID */
 .affiche-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem;margin-top:2rem;}
-@media(max-width:760px){.affiche-grid{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:460px){.affiche-grid{grid-template-columns:1fr;}}
+@media(max-width:1000px){.affiche-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:768px){.affiche-grid{grid-template-columns:1fr!important;width:100%;max-width:none;}}
+@media(max-width:560px){
+  body{cursor:auto;}
+  .cur,.cur-r{display:none;}
+  .affiche-grid{grid-template-columns:1fr;width:100%;max-width:none;margin-top:1.2rem;}
+  .aff-card{width:100%;}
+  .aff-card img{width:100%;}
+  .section{padding:2.5rem 1.3rem;}
+  .section-header{margin-bottom:1.5rem;}
+  nav{padding:1.1rem 1.3rem;flex-wrap:wrap;gap:.6rem;}
+  .nav-label{font-size:.55rem;}
+  .hero{min-height:auto;padding:6rem 1.3rem 1.5rem;}
+  .hero-title{font-size:clamp(2.2rem,11vw,3.4rem);line-height:1;margin-bottom:1rem;overflow-wrap:break-word;}
+  .ticker{padding:.6rem 0;}
+  .filter-bar{padding:.3rem .6rem;flex-wrap:wrap;overflow-x:visible;justify-content:center;gap:.2rem;}
+  .filter-btn{padding:.7rem .7rem;font-size:.55rem;letter-spacing:.08em;}
+  .logo-wrap{grid-template-columns:1fr;}
+  .illus-grid{grid-template-columns:1fr;}
+  .tools-bar{flex-direction:column;align-items:flex-start;gap:1rem;padding:1.5rem 1.3rem;}
+  .contact-strip{flex-direction:column;align-items:flex-start;gap:2rem;padding:4rem 1.3rem;}
+  footer{flex-direction:column;gap:.7rem;align-items:flex-start;padding:1rem 1.3rem;}
+}
 .aff-card{border-radius:.75rem;overflow:hidden;border:1px solid rgba(242,232,213,.07);background:rgba(242,232,213,.02);transition:border-color .3s,transform .3s;}
 .aff-card:hover{border-color:rgba(232,82,26,.35);transform:translateY(-4px);}
-.aff-card img{width:100%;display:block;aspect-ratio:1/1.414;object-fit:cover;background:var(--sand);}
+.aff-card img{width:100%;display:block;aspect-ratio:1/1.414;object-fit:contain;background:#100f0d;}
 .aff-card-info{padding:.9rem 1rem;display:flex;flex-direction:column;gap:.6rem;}
 .aff-card-title{font-size:.85rem;font-weight:700;color:var(--sand);letter-spacing:-.01em;}
 .aff-card-info .type-badge{margin-bottom:0;align-self:flex-start;}
@@ -152,14 +173,15 @@ nav{
 /* LIGHTBOX */
 .lightbox{
   position:fixed;inset:0;z-index:1000;
-  display:flex;align-items:center;justify-content:center;
+  display:flex;
   background:rgba(8,7,6,.92);backdrop-filter:blur(8px);
   opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s;
-  padding:4vh 4vw;cursor:zoom-out;
+  padding:24px;cursor:zoom-out;
 }
 .lightbox.open{opacity:1;visibility:visible;}
 .lightbox img{
-  max-width:100%;max-height:92vh;object-fit:contain;
+  display:block;margin:auto;
+  max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;
   border-radius:.4rem;box-shadow:0 30px 80px rgba(0,0,0,.6);
   transform:scale(.94);transition:transform .35s cubic-bezier(.2,.9,.3,1);
 }

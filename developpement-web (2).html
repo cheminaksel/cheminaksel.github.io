@@ -291,9 +291,26 @@ footer{
   .cta{flex-direction:column;gap:3rem;align-items:flex-start;padding:5rem 2rem;}
 }
 @media(max-width:560px){
+  body{cursor:auto;}
+  .cur,.cur-r{display:none;}
+  nav{flex-wrap:wrap;gap:.6rem;padding:1rem 1.2rem;}
+  .nav-label{font-size:.55rem;}
+  .hero{padding:7rem 1.2rem 2.5rem;}
+  .hero h1{font-size:clamp(2.6rem,13vw,4rem);line-height:.95;overflow-wrap:break-word;}
+  .hero-sub{font-size:.9rem;}
+  .hero-skills{flex-wrap:wrap;}
+  .section-head{padding:2.5rem 1.2rem 1.2rem;}
+  .projects{padding:0 1.2rem 3rem;}
+  .project-info{padding:1.5rem 1.2rem;}
+  .project-visual{min-height:200px;}
+  .competences{margin:0 1.2rem 3rem;}
   .comp-grid{grid-template-columns:1fr;}
   .comp-item{border-right:none;}
   .comp-item:nth-child(4n){border-right:none;}
+  .tools-bar{flex-direction:column;align-items:flex-start;gap:1rem;padding:1.5rem 1.2rem;}
+  .cta{padding:4rem 1.2rem;}
+  .btn-row{flex-wrap:wrap;}
+  footer{flex-direction:column;gap:.7rem;align-items:flex-start;padding:1rem 1.2rem;}
 }
 </style>
 </head>
