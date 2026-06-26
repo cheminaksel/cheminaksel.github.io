@@ -356,6 +356,7 @@ footer{background:rgba(14,13,11,.95);border-top:1px solid rgba(242,232,213,.05);
 .ft-right a:hover{color:var(--lime);}
 
 @media(max-width:900px){
+  *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
   nav{padding:1rem 1.5rem;}
   .hero{padding:8rem 1.5rem 3rem;}
   .filter-bar{padding:0 1rem;}
@@ -369,6 +370,9 @@ footer{background:rgba(14,13,11,.95);border-top:1px solid rgba(242,232,213,.05);
   .video-block.reverse{direction:ltr;}
   .video-info{border-left:none!important;border-right:none!important;border-top:1px solid rgba(242,232,213,.06);}
   .motion-grid{grid-template-columns:1fr;}
+  .motion-card--featured{grid-column:auto;}
+  .motion-card--featured .motion-visual{min-height:260px;}
+  .motion-badge{opacity:1;transform:none;}
   .cta{flex-direction:column;gap:3rem;align-items:flex-start;padding:5rem 2rem;}
 }
 @media(max-width:560px){
@@ -385,6 +389,8 @@ footer{background:rgba(14,13,11,.95);border-top:1px solid rgba(242,232,213,.05);
   .photo-section,.video-section,.motion-section{padding:1.5rem 1.2rem 3rem;}
   .photo-item{width:84vw;height:58vh;}
   .video-info{padding:1.5rem 1.2rem;}
+  .video-title{font-size:clamp(1.3rem,6vw,1.8rem);overflow-wrap:break-word;}
+  .video-desc{font-size:.85rem;}
   .cta{padding:4rem 1.2rem;}
   footer{flex-direction:column;gap:.7rem;align-items:flex-start;padding:1rem 1.2rem;}
 }
@@ -463,8 +469,8 @@ footer{background:rgba(14,13,11,.95);border-top:1px solid rgba(242,232,213,.05);
 
         <!-- ░░ Tes 7 photos : remplace simplement le src par le nom de ton fichier image ░░ -->
 
-        <div class="photo-item" data-full="IMG_7.png" data-cap="">
-          <img src="IMG_7.png" alt="" loading="lazy">
+        <div class="photo-item" data-full="IMG_7.jpg" data-cap="">
+          <img src="IMG_7.jpg" alt="" loading="lazy">
           <div class="photo-overlay">
             
           </div>
