@@ -536,7 +536,9 @@ footer{
   display:flex;align-items:center;justify-content:space-between;
 }
 .ft-logo{font-family:'Syne Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(242,232,213,.2);}
-.ft-right{font-family:'Syne Mono',monospace;font-size:.58rem;color:rgba(242,232,213,.15);letter-spacing:.1em;}
+.ft-right{font-family:'Syne Mono',monospace;font-size:.58rem;color:rgba(242,232,213,.15);letter-spacing:.1em;display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;}
+.ft-right a{color:inherit;text-decoration:none;transition:color .25s;}
+.ft-right a:hover{color:var(--lime);}
 
 /* ══════════════════════════
    RESPONSIVE
@@ -1081,7 +1083,10 @@ footer{
 
 <footer>
   <span class="ft-logo">Portfolio — 2026</span>
-  <span class="ft-right" data-en="Made by Aksel Chemin ✦">Fait par Aksel Chemin ✦</span>
+  <span class="ft-right">
+    <a href="mentions-legales.html" data-en="Legal notice">Mentions légales</a>
+    <span data-en="Made by Aksel Chemin ✦">Fait par Aksel Chemin ✦</span>
+  </span>
 </footer>
 <div hidden>
   google-site-verification: googlea88955f452895fdf.html
