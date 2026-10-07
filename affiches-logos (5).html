@@ -262,6 +262,26 @@ footer{background:rgba(14,13,11,.95);border-top:1px solid rgba(242,232,213,.05);
 .ft-right a:hover{color:var(--lime);}
 
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* RESPONSIVE (après les règles de base pour ne pas être écrasé) */
+@media(max-width:768px){
+  .logo-wrap,.illus-grid{grid-template-columns:1fr;}
+  .logo-card{min-width:0;}
+}
+@media(max-width:560px){
+  nav > span{min-width:0;gap:.6rem!important;flex-wrap:wrap;}
+  .nav-label{font-size:.5rem;letter-spacing:.1em;min-width:0;line-height:1.4;}
+  .section-header{flex-wrap:wrap;gap:.5rem 1rem;}
+  .section-title{font-size:clamp(1.6rem,8.5vw,2.4rem);overflow-wrap:anywhere;}
+  .section-num{letter-spacing:.1em;line-height:1.5;}
+  .logo-card{padding:2rem 1.2rem;min-height:220px;}
+  .logo-card img{max-width:100%;}
+  .tools-bar{flex-direction:column;align-items:flex-start;gap:1rem;padding:1.5rem 1.3rem;}
+  .contact-strip{flex-direction:column;align-items:flex-start;gap:2rem;padding:4rem 1.3rem;}
+  .contact-left{min-width:0;max-width:100%;}
+  .contact-left h2{font-size:clamp(2rem,10vw,3rem);overflow-wrap:anywhere;}
+  footer{flex-direction:column;gap:.7rem;align-items:flex-start;padding:1rem 1.3rem;}
+}
 </style>
 </head>
 <body>

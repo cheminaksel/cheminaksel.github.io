@@ -295,7 +295,11 @@ footer{
   body{cursor:auto;}
   .cur,.cur-r{display:none;}
   nav{flex-wrap:wrap;gap:.6rem;padding:1rem 1.2rem;}
-  .nav-label{font-size:.55rem;}
+  nav > span{min-width:0;gap:.6rem!important;flex-wrap:wrap;}
+  .nav-label{font-size:.5rem;letter-spacing:.1em;min-width:0;line-height:1.4;}
+  .section-title{font-size:clamp(1.6rem,8.5vw,2.4rem);overflow-wrap:anywhere;}
+  .cta-left{min-width:0;max-width:100%;}
+  .cta-left h2{font-size:clamp(2rem,10vw,3rem);overflow-wrap:anywhere;}
   .hero{padding:7rem 1.2rem 2.5rem;}
   .hero h1{font-size:clamp(2.6rem,13vw,4rem);line-height:.95;overflow-wrap:break-word;}
   .hero-sub{font-size:.9rem;}
